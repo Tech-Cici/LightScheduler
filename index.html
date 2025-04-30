@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web-Based Light Scheduler</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #f0f4ff, #d5e1ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: scale(1.02);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 1rem;
+      color: #444;
+      font-weight: 500;
+    }
+
+    input[type="time"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+      transition: border 0.2s;
+    }
+
+    input[type="time"]:focus {
+      outline: none;
+      border-color: #4f8ef7;
+    }
+
+    button {
+      width: 100%;
+      background: #4f8ef7;
+      color: white;
+      font-size: 1rem;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.5rem;
+      margin-top: 1.2rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #3e78d4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Light Scheduler</h2>
+    <label>
+      ON Time:
+      <input type="time" id="onTime">
+    </label>
+    <label>
+      OFF Time:
+      <input type="time" id="offTime">
+    </label>
+    <button onclick="sendSchedule()">Submit</button>
+  </div>
+
+  <script>
+    const socket = new WebSocket('ws://localhost:8765');
+
+    socket.onopen = () => console.log('WebSocket connected');
+    socket.onerror = (e) => console.error('WebSocket error:', e);
+
+    function sendSchedule() {
+      const on = document.getElementById('onTime').value;
+      const off = document.getElementById('offTime').value;
+
+      if (!on || !off) {
+        alert("Please set both ON and OFF times.");
+        return;
+      }
+
+      const schedule = { on, off };
+      socket.send(JSON.stringify(schedule));
+      alert('Schedule sent successfully!');
+    }
+  </script>
+</body>
+</html>
